@@ -1,115 +1,75 @@
 ﻿using System;
 using System.Text;
+using System.Collections.Generic;
+
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace FnvBrute
 {
     class FnvHasher
     {
         private const uint OffsetBasis = 2166136261;
-
         private const uint Prime = 16777619;
 
         // digits are 0x30 to 0x39
         // lowercase alphabet is 0x61 to 0x7a
         // underscore is 0x5f
 
-        /// <summary>
-        /// An array of bytes in the plain text.
-        /// Its length is always one less than the specified plain text length,
-        /// since the last byte is handled inline.
-        /// </summary>
-        private byte[] _bytes;
+        //private List<uint> tofind = new List<uint>() { 0x8b94465f, 0x1fe1cdd8, 0x2c16d809, 0x58c0f90f, 0x1814bfd4, 0xd61447d3, 0x8c8b5767, 0x8c17f344, 0xaffd1047, 0x6d90b646, 0x134d04b5, 0x74698ce8, 0x75df8462, 0xedc78320, 0x33593638, 0xc08dc572, 0x6efd7dc5, 0x75df8462, 0x05099ded, 0xf646d5e7, 0x51b7d0e3, 0xc2cf9f73, 0x9f75fd34, 0x2ab1a6a9, 0x4bf4650d, 0xac75d66e, 0x8ab4684d, 0xce326723, 0x6f741307, 0x5472d655, 0x1b6b5506, 0x3347011c, 0xd1b89548, 0x40a89b31, 0x54ef8e79, 0xc8266ef9, 0x7ba5c8e0, 0x0810c3b9, 0x13bdaa3b, 0xd7b602ce, 0x13bdaa3b, 0x283c6e78, 0x9b4504d6, 0x887ca5dd };
+        private List<uint> tofind = new List<uint>() { 0xd61447d3, 0x8c8b5767, 0x8c17f344 };
 
-        /// <summary>
-        /// An array of hashes of _bytes at different length.
-        /// Serves as a cache to prevent re-calculation.
-        /// </summary>
-        private uint[] _hashes;
-
-        /// <summary>
-        /// Creates and initializes arrays.
-        /// </summary>
-        /// <param name="length">The length of plain text.</param>
-        private void Initialize(int length)
-        {
-            _bytes = new byte[length - 1];
-            _hashes = new uint[length - 1];
-
-            // set up the first byte to get going after an Increment()
-            _bytes[0] = 0x60;
-
-            for (var i = 1; i < _bytes.Length; i++)
-            {
-                // set up every other byte to chain Increment() for the whole array
-                _bytes[i] = 0x5f;
-            }
-        }
-
-        /// <summary>
-        /// Bruuuuuuuuuteforce!
-        /// </summary>
-        /// <param name="length">The length of plain text.</param>
-        /// <param name="match">The hash to look for.</param>
-        /// <param name="callback">An <see cref="OnMatchFound"/> callback that is called when a match is found.</param>
         public void Bruteforce(int length, uint match, OnMatchFound callback)
         {
-            Initialize(length);
-            while (true)
-            {
-                var depth = _bytes.Length - 1;
-                while (_bytes.Increment(depth))
-                {
-                    depth--;
-                    if (depth == -1) return;    // all permutations at this length are done
+            char[] chars = "abcdefghijklmnopqrstuvwxyz0123456789._".ToCharArray();
+            string output = "";
+            int charsproc = 0;
+
+            Parallel.ForEach(chars, index => {
+                byte[] _bytes = new byte[length];
+                _bytes[0] = (byte)index;
+                for (var i = 1; i < _bytes.Length; i++) {
+                    // set up every other byte to chain Increment() for the whole array
+                    _bytes[i] = (byte)'_';
                 }
 
-                _hashes.ZeroFrom(depth);    // throw away stale hash caches
+                //Initialize(_bytes, length, chars[index]);
 
-                byte lastByte = 0x2f;
-                uint tempHash = Hash(_bytes, _hashes, _bytes.Length) * Prime;
-                while (!lastByte.Increment(out var nextByte))
-                {
-                    lastByte = nextByte;
-                    uint result = tempHash;
-                    result ^= lastByte;
-
-                    if (result == match)
-                    {
-                        callback(length, Encoding.ASCII.GetString(_bytes) + Convert.ToChar(lastByte));
+                while (true) {
+                    var depth = _bytes.Length - 1;
+                    while (_bytes.Increment(depth)) {
+                        depth--;
+                        if (depth == 0)
+                            goto stop;// all permutations at this length are done
                     }
+                    uint hash = Hash32(_bytes);
+                    Console.WriteLine($"{hash.ToString("x8")} - {Encoding.ASCII.GetString(_bytes)}");
+                    if (/*tofind.Contains(result)*/hash == match) {
+                        output += $"{hash.ToString("x8")} - {Encoding.ASCII.GetString(_bytes)}\n";
+                    }
+
                 }
-            }
+            stop:
+                charsproc++;
+            });
+
+            callback(length, output);
         }
 
-        private static uint Hash(byte[] array, uint[] hashes, int length)
+        public uint Hash32(byte[] s)
         {
-            if (length > 1)
-            {
-                // Return cached hash, or build upon last hash?
-                uint hash = hashes[length - 1];
-                if (hash > 0)
-                {
-                    // Cached
-                    return hash;
-                }
-                else
-                {
-                    // Build
-                    hash = Hash(array, hashes, length - 1) * Prime;
-                    hash ^= array[length - 1];
-                    hashes[length - 1] = hash;
-                    return hash;
-                }
-            }
-            else
-            {
-                // Build first hash, nothing to build upon on
-                uint hash = OffsetBasis;
-                hash *= Prime;
-                hash ^= array[0];
-                hashes[0] = hash;
-                return hash;
-            }
+            if (s[0] == 0x61 && s[1] == 0x61)
+                s[0] = s[0];
+            uint h = OffsetBasis;
+            foreach (byte c in s)
+                h = (h ^ c) * Prime;
+            h *= 0x2001;
+            h ^= h >> 0x7;
+            h *= 0x9;
+            h ^= h >> 0x11;
+            h *= 0x21;
+
+            return h;
         }
 
         public delegate void OnMatchFound(int length, string match);

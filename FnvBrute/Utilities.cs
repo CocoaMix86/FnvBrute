@@ -6,32 +6,22 @@
         public static bool Increment(this byte[] array, int i)
         {
             var result = (byte)(array[i] + 1);
-            if (result == 0x3a)
-            {
-                // digits out of bound, continue to alphabet
-                array[i] = 0x61;
+
+            if (result == '`') {
+                array[i] = (byte)'.';
                 return false;
             }
-            else if (result == 0x7b)
+            // digits out of bound, continue to alphabet
+            // : comes after 9
+            else if (result == ':')
             {
-                // alphabet out of bound
-                if (i > 0)
-                {
-                    // not the first byte, continue to underscore
-                    array[i] = 0x5f;
-                    return false;
-                }
-                else
-                {
-                    // is the first byte, all done
-                    array[i] = 0x61;
-                    return true;
-                }
+                array[i] = (byte)'a';
+                return false;
             }
-            else if (result == 0x60)
+            // alphabet out of bound
+            // } comes after z
+            else if (result == '{')
             {
-                // uppercase out of bound, all done
-                array[i] = 0x30;
                 return true;
             }
 

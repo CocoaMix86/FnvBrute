@@ -12,10 +12,12 @@ namespace FnvBrute
 
         static void Main(string[] args)
         {
+            args = new string[] { "0xc84b8631", "3", "3"};
             uint match = 0;
             int maxLength = 0;
+            int minLength = 0;
 
-            if (args.Length == 2)
+            if (args.Length == 3)
             {
                 // Parse hash param
                 try
@@ -30,7 +32,8 @@ namespace FnvBrute
                 // Parse length param
                 try
                 {
-                    maxLength = (int)new Int32Converter().ConvertFromString(args[1]);
+                    maxLength = int.Parse(args[2]);
+                    minLength = int.Parse(args[1]);
                 }
                 catch (Exception e)
                 {
@@ -51,7 +54,7 @@ namespace FnvBrute
             Console.WriteLine($"Hash: {match}, max plaintext length: {maxLength}");
             _stopwatch.Start();
 
-            for (int length = 2; length <= maxLength; length++)
+            for (int length = minLength; length <= maxLength; length++)
             {
                 CreateFnvThread(length, match);
             }
