@@ -12,7 +12,7 @@ namespace FnvBrute
 
         static void Main(string[] args)
         {
-            args = new string[] { "0x9ab38a74", "3", "7"};
+            //args = new string[] { "0x9ab38a74", "3", "7"};
             uint match = 0;
             int maxLength = 0;
             int minLength = 0;
