@@ -44,10 +44,10 @@ namespace FnvBrute
             if (args.Length < 2 || match == 0 || maxLength < 2)
             {
                 Console.WriteLine("\nFnvBrute FNV-1 (32-bit) hash collider, https://github.com/xyx0826/FnvBrute");
-                Console.WriteLine("Usage: FnvBrute.exe {hash} {maxLength}");
+                Console.WriteLine("Usage: FnvBrute.exe 0x[hash] [minLength] [maxLength]");
                 Console.WriteLine("Hash should be a uint32_t in either decimal or hexadecimal form");
-                Console.WriteLine("MaxLength should be equal or greater than 2");
-                Console.WriteLine("Example: FnvBrute.exe 0x1234abcd 12\n");
+                Console.WriteLine("minLength and maxLength should be equal or greater than 2");
+                Console.WriteLine("Example: FnvBrute.exe 0x1234abcd 5 12\n");
                 return;
             }
 

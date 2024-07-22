@@ -48,14 +48,15 @@ namespace FnvBrute
                         goto skip;
                     uint hash = Hash32(_bytes);
                     if (/*tofind.Contains(result)*/hash == match) {
-                        output += $"{hash.ToString("x8")} - {Encoding.ASCII.GetString(_bytes)}\n";
+                        //output += $"{hash.ToString("x8")} - {Encoding.ASCII.GetString(_bytes)}\n";
+                        callback(length, $"{hash.ToString("x8")} - {Encoding.ASCII.GetString(_bytes)}");
                     }
                 skip:;
                 }
             stop:;
             });
 
-            callback(length, output);
+            //callback(length, output);
         }
 
         public uint Hash32(byte[] s)
