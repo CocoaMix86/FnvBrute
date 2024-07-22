@@ -4,6 +4,7 @@ using System.Collections.Generic;
 
 using System.Threading;
 using System.Threading.Tasks;
+using System.Linq;
 
 namespace FnvBrute
 {
@@ -21,17 +22,18 @@ namespace FnvBrute
 
         public void Bruteforce(int length, uint match, OnMatchFound callback)
         {
+            List<string> patterns = new List<string>() { "..", "__"};
             char[] chars = "abcdefghijklmnopqrstuvwxyz0123456789._".ToCharArray();
             string output = "";
-            int charsproc = 0;
 
             Parallel.ForEach(chars, index => {
                 byte[] _bytes = new byte[length];
                 _bytes[0] = (byte)index;
                 for (var i = 1; i < _bytes.Length; i++) {
                     // set up every other byte to chain Increment() for the whole array
-                    _bytes[i] = (byte)'_';
+                    _bytes[i] = (byte)'a';
                 }
+                _bytes[length - 1] = (byte)'-';
 
                 //Initialize(_bytes, length, chars[index]);
 
@@ -42,15 +44,15 @@ namespace FnvBrute
                         if (depth == 0)
                             goto stop;// all permutations at this length are done
                     }
+                    if (Encoding.ASCII.GetString(_bytes).Contains(".."))
+                        goto skip;
                     uint hash = Hash32(_bytes);
-                    Console.WriteLine($"{hash.ToString("x8")} - {Encoding.ASCII.GetString(_bytes)}");
                     if (/*tofind.Contains(result)*/hash == match) {
                         output += $"{hash.ToString("x8")} - {Encoding.ASCII.GetString(_bytes)}\n";
                     }
-
+                skip:;
                 }
-            stop:
-                charsproc++;
+            stop:;
             });
 
             callback(length, output);
@@ -58,8 +60,6 @@ namespace FnvBrute
 
         public uint Hash32(byte[] s)
         {
-            if (s[0] == 0x61 && s[1] == 0x61)
-                s[0] = s[0];
             uint h = OffsetBasis;
             foreach (byte c in s)
                 h = (h ^ c) * Prime;

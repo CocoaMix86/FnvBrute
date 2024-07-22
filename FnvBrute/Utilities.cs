@@ -1,10 +1,15 @@
-﻿namespace FnvBrute
+﻿using System.Collections.Generic;
+using System.Linq;
+
+namespace FnvBrute
 {
     static class Utilities
     {
+        public static List<char> chars = "-abcdefghijklmnopqrstuvwxyz0123456789._".ToCharArray().ToList();
         // returns: whether the specified byte has completed a loop
         public static bool Increment(this byte[] array, int i)
         {
+            /*
             var result = (byte)(array[i] + 1);
 
             if (result == '`') {
@@ -27,7 +32,15 @@
 
             // keep incrementing
             array[i] = result;
-            return false;
+            */
+            if (chars.IndexOf((char)array[i]) + 1 > chars.Count - 1) {
+                array[i] = (byte)chars[0];
+                return true;
+            }
+            else {
+                array[i] = (byte)chars[chars.IndexOf((char)array[i]) + 1];
+                return false;
+            }
         }
 
         public static bool Increment(this byte from, out byte result)
