@@ -2,30 +2,24 @@
 
 ## Introduction
 
-FnvBrute is a simple tool for finding collisions in 32-bit FNV-1 hashes. 
-These hashes are primarily used by Wwise, a widely used video game audio middleware.
-
-Since FnvBrute is designed with Wwise hashes in mind, **it is important to note that plain texts are generated under these rules:**
-
-- The first byte can only be a lowercase letter
-- Any byte after that can be a lowercase letter, a digit, or an underscore
+FnvBrute is a simple tool for finding collisions in 32-bit FNV-1 hashes.
+This is a modification of the original repo, made to find hashes in the game THUMPER. It uses FNV-1a, with some additional bit shifting.
 
 The implementation of FnvBrute is very barebone. It offers no GPU acceleration, dictionary support, or pause/resume/checkpoint features. 
-FnvBrute uses very basic multithreading; it spins up a separate thread for every length of plain text. 
-Workload on a single plain text length is not distributed across multiple threads.
+FnvBrute uses very basic multithreading;
 
 ## Usage
 
-`FnvBrute.exe {hash} {maxLength}`
+`FnvBrute.exe 0x[hash] [minLength] [maxLength]`
 
 `hash`: The target hash to look for. Accepts a decimal or hexadecimal `uint32_t` value.
 
-`maxLength`: The maximum length of the plain text. Must be greater or equal to 2.
+`minLength` and `maxLength`: The minimum and maximum length of the plain text. Must be greater or equal to 2.
 
 ## Example
 
 ```
->FnvBrute.exe 0x50c63a23 8
+>FnvBrute.exe 0x50c63a23 2 8
 Hash: 1355168291, max plaintext length: 8
 Creating hasher for length 2
 Creating hasher for length 3
