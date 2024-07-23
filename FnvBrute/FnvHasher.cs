@@ -24,12 +24,12 @@ namespace FnvBrute
 
         public void Bruteforce(int length, uint match, OnMatchFound callback)
         {
-            char[] chars = "abcdefghijklmnopqrstuvwxyz".ToCharArray();
+            byte[] chars = "abcdefghijklmnopqrstuvwxyz".ToCharArray().Select(c => (byte)c).ToArray();
             //char[] chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".ToCharArray();
 
             Parallel.ForEach(chars, index => {
                 byte[] _bytes = new byte[length];
-                _bytes[0] = (byte)index;
+                _bytes[0] = index;
                 for (var i = 1; i < _bytes.Length; i++) {
                     // set up every other byte to chain Increment() for the whole array
                     _bytes[i] = (byte)'a';
