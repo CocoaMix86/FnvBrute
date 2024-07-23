@@ -67,10 +67,8 @@ namespace FnvBrute
             foreach (byte c in s)
                 h = (h ^ c) * Prime;
             h *= 0x2001;
-            h ^= h >> 0x7;
-            h *= 0x9;
-            h ^= h >> 0x11;
-            h *= 0x21;
+            h = (h ^ (h >> 0x7)) * 0x9;
+            h = (h ^ (h >> 0x11)) * 0x21;
             return h;
         }
     }
