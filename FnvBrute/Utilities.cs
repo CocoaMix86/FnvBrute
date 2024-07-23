@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-
-namespace FnvBrute
+﻿namespace FnvBrute
 {
     static class Utilities
     {
