@@ -20,10 +20,12 @@ namespace FnvBrute
         //private List<uint> tofind = new List<uint>() { 0x8b94465f, 0x1fe1cdd8, 0x2c16d809, 0x58c0f90f, 0x1814bfd4, 0xd61447d3, 0x8c8b5767, 0x8c17f344, 0xaffd1047, 0x6d90b646, 0x134d04b5, 0x74698ce8, 0x75df8462, 0xedc78320, 0x33593638, 0xc08dc572, 0x6efd7dc5, 0x75df8462, 0x05099ded, 0xf646d5e7, 0x51b7d0e3, 0xc2cf9f73, 0x9f75fd34, 0x2ab1a6a9, 0x4bf4650d, 0xac75d66e, 0x8ab4684d, 0xce326723, 0x6f741307, 0x5472d655, 0x1b6b5506, 0x3347011c, 0xd1b89548, 0x40a89b31, 0x54ef8e79, 0xc8266ef9, 0x7ba5c8e0, 0x0810c3b9, 0x13bdaa3b, 0xd7b602ce, 0x13bdaa3b, 0x283c6e78, 0x9b4504d6, 0x887ca5dd };
         private List<uint> tofind = new List<uint>() { 0xd61447d3, 0x8c8b5767, 0x8c17f344 };
 
+        private HashSet<string> skipthese = new HashSet<string>() { "...", "aaa", "bbb", "ccc", "ddd", "eee", "fff", "ggg", "hhh", "iii", "jjj", "kkk", "lll", "mmm", "nnn", "ooo", "ppp", "qqq", "rrr", "sss", "ttt", "uuu", "vvv", "www", "xxx", "yyy", "zzz" };
+
         public void Bruteforce(int length, uint match, OnMatchFound callback)
         {
             List<string> patterns = new List<string>() { "..", "__"};
-            char[] chars = "abcdefghijklmnopqrstuvwxyz0123456789._".ToCharArray();
+            char[] chars = "abcdefghijklmnopqrstuvwxyz".ToCharArray();
             string output = "";
 
             Parallel.ForEach(chars, index => {
@@ -44,8 +46,10 @@ namespace FnvBrute
                         if (depth == 0)
                             goto stop;// all permutations at this length are done
                     }
-                    if (Encoding.ASCII.GetString(_bytes).Contains(".."))
+
+                    if (skipthese.Any(x => Encoding.ASCII.GetString(_bytes).Contains(x)))
                         goto skip;
+                    
                     uint hash = Hash32(_bytes);
                     if (/*tofind.Contains(result)*/hash == match) {
                         //output += $"{hash.ToString("x8")} - {Encoding.ASCII.GetString(_bytes)}\n";
