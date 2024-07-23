@@ -26,14 +26,23 @@ namespace FnvBrute
 
         public void Bruteforce(int length, uint match, OnMatchFound callback)
         {
+            int proc = 0;
             char[] chars = "abcdefghijklmnopqrstuvwxyz".ToCharArray();
             byte[] combochars = "abcdefghijklmnopqrstuvwxyz0123456789._".ToCharArray().Select(c => (byte)c).ToArray();
-            Variations<byte> perms = new Variations<byte>(combochars, length, GenerateOption.WithRepetition);
-
-            Parallel.ForEach(perms, _bytes => {  
+            Variations<byte> perms = new Variations<byte>(combochars, length - 1, GenerateOption.WithRepetition);
+            /*
+            Parallel.ForEach(perms, _bytes => {
                 uint hash = Hash32(_bytes);
                 if (hash == match) {
                     callback(length, $"{hash.ToString("x8")} - {Encoding.ASCII.GetString(_bytes.ToArray())}");
+                }
+            });*/
+            Parallel.ForEach(chars, firstbyte => {
+                foreach (var _bytes in perms) {
+                    uint hash = Hash32((byte)firstbyte, _bytes);
+                    if (hash == match) {
+                        callback(length, $"{hash.ToString("x8")} - {firstbyte}{Encoding.ASCII.GetString(_bytes.ToArray())}");
+                    }
                 }
             });
 
@@ -87,6 +96,20 @@ namespace FnvBrute
         public uint Hash32(IReadOnlyList<byte> s)
         {
             uint h = OffsetBasis;
+            foreach (byte c in s)
+                h = (h ^ c) * Prime;
+            h *= 0x2001;
+            h ^= h >> 0x7;
+            h *= 0x9;
+            h ^= h >> 0x11;
+            h *= 0x21;
+
+            return h;
+        }
+        public uint Hash32(byte first, IReadOnlyList<byte> s)
+        {
+            uint h = OffsetBasis;
+            h = (h ^ first) * Prime;
             foreach (byte c in s)
                 h = (h ^ c) * Prime;
             h *= 0x2001;
