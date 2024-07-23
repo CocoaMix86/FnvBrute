@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Runtime.InteropServices;
 
 namespace FnvBrute
 {
@@ -93,10 +94,8 @@ namespace FnvBrute
                             goto stop;// all permutations at this length are done
                     }
                     uint hash = Hash32(_bytes);
-                    if (hash == match) {
-                        //callback(length, $"{hash.ToString("x8")} - {Encoding.ASCII.GetString(_bytes)}");
-                        Console.WriteLine($"Length {length} match: >> {hash.ToString("x8")} - {Encoding.ASCII.GetString(_bytes)} << in {_stopwatch.ElapsedMilliseconds / 1000}s");
-                    }
+                    //if (hash == match)
+                        //Console.WriteLine($"Length {length} match: >> {hash.ToString("x8")} - {Encoding.ASCII.GetString(_bytes)} << in {_stopwatch.ElapsedMilliseconds / 1000}s");
                 }
             stop:;
             });
