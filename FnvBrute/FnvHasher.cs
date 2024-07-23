@@ -24,7 +24,6 @@ namespace FnvBrute
 
         public void Bruteforce(int length, uint match, OnMatchFound callback)
         {
-            int proc = 0;
             char[] chars = "abcdefghijklmnopqrstuvwxyz".ToCharArray();
             //char[] chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".ToCharArray();
 
@@ -44,10 +43,7 @@ namespace FnvBrute
                         if (depth == 0)
                             goto stop;// all permutations at this length are done
                     }
-                    if (Encoding.ASCII.GetString(_bytes).Contains(".."))
-                        goto skip;
                     uint hash = Hash32(_bytes);
-                    proc++;
                     if (hash == match) {
                         callback(length, $"{hash.ToString("x8")} - {Encoding.ASCII.GetString(_bytes)}");
                     }
@@ -56,8 +52,6 @@ namespace FnvBrute
                 }
             stop:;
             });
-            Console.WriteLine(proc);
-            //callback(length, output);
         }
 
         public uint Hash32(byte[] s)
