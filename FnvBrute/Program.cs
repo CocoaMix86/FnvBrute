@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -72,11 +70,11 @@ namespace FnvBrute
 
 
         //private List<uint> tofind = new List<uint>() { 0x8b94465f, 0x1fe1cdd8, 0x2c16d809, 0x58c0f90f, 0x1814bfd4, 0xd61447d3, 0x8c8b5767, 0x8c17f344, 0xaffd1047, 0x6d90b646, 0x134d04b5, 0x74698ce8, 0x75df8462, 0xedc78320, 0x33593638, 0xc08dc572, 0x6efd7dc5, 0x75df8462, 0x05099ded, 0xf646d5e7, 0x51b7d0e3, 0xc2cf9f73, 0x9f75fd34, 0x2ab1a6a9, 0x4bf4650d, 0xac75d66e, 0x8ab4684d, 0xce326723, 0x6f741307, 0x5472d655, 0x1b6b5506, 0x3347011c, 0xd1b89548, 0x40a89b31, 0x54ef8e79, 0xc8266ef9, 0x7ba5c8e0, 0x0810c3b9, 0x13bdaa3b, 0xd7b602ce, 0x13bdaa3b, 0x283c6e78, 0x9b4504d6, 0x887ca5dd };
-        private List<uint> tofind = new List<uint>() { 0xd61447d3, 0x8c8b5767, 0x8c17f344 };
+        private uint[] tofind = new uint[] { 0xd61447d3, 0x8c8b5767, 0x8c17f344 };
 
         static void Bruteforce(int length, uint match)
         {
-            byte[] chars = "abcdefghijklmnopqrstuvwxyz".ToCharArray().Select(c => (byte)c).ToArray();
+            byte[] chars = Encoding.UTF8.GetBytes("abcdefghijklmnopqrstuvwxyz");
             //char[] chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".ToCharArray();
 
             Parallel.ForEach(chars, index => {
@@ -126,28 +124,25 @@ namespace FnvBrute
         // returns: whether the specified byte has completed a loop
         public static bool Increment(this byte[] array, int i)
         {
-            byte result = (byte)(array[i] + 1);
-
-            if (result == '{') {
-                array[i] = (byte)'0';
-                return false;
-            }
-            if (result == ':') {
-                array[i] = (byte)'.';
-                return false;
-            }
-            if (result == '/') {
-                array[i] = (byte)'_';
-                return false;
-            }
-            if (result == '`') {
-                array[i] = (byte)'a';
-                return true;
-            }
-
             array[i]++;
-            return false;
 
+            switch (array[i]) {
+                case (byte)'{':
+                    array[i] = (byte)'0';
+                    return false;
+                case (byte)':':
+                    array[i] = (byte)'.';
+                    return false;
+                case (byte)'/':
+                    array[i] = (byte)'_';
+                    return false;
+                case (byte)'`':
+                    array[i] = (byte)'a';
+                    return true;
+                default:
+                    return false;
+                    
+            }
         }
     }
 }
