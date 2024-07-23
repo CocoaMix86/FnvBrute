@@ -22,9 +22,9 @@ namespace FnvBrute
 
         public void Bruteforce(int length, uint match, OnMatchFound callback)
         {
-            List<string> patterns = new List<string>() { "..", "__"};
-            char[] chars = "abcdefghijklmnopqrstuvwxyz0123456789._".ToCharArray();
-            string output = "";
+            int proc = 0;
+            char[] chars = "abcdefghijklmnopqrstuvwxyz".ToCharArray();
+            //char[] chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".ToCharArray();
 
             Parallel.ForEach(chars, index => {
                 byte[] _bytes = new byte[length];
@@ -35,8 +35,6 @@ namespace FnvBrute
                 }
                 _bytes[length - 1] = (byte)'-';
 
-                //Initialize(_bytes, length, chars[index]);
-
                 while (true) {
                     var depth = _bytes.Length - 1;
                     while (_bytes.Increment(depth)) {
@@ -44,18 +42,17 @@ namespace FnvBrute
                         if (depth == 0)
                             goto stop;// all permutations at this length are done
                     }
-                    if (Encoding.ASCII.GetString(_bytes).Contains(".."))
-                        goto skip;
                     uint hash = Hash32(_bytes);
-                    if (/*tofind.Contains(result)*/hash == match) {
-                        //output += $"{hash.ToString("x8")} - {Encoding.ASCII.GetString(_bytes)}\n";
+                    proc++;
+                    if (hash == match) {
                         callback(length, $"{hash.ToString("x8")} - {Encoding.ASCII.GetString(_bytes)}");
                     }
                 skip:;
+
                 }
             stop:;
             });
-
+            Console.WriteLine(proc);
             //callback(length, output);
         }
 

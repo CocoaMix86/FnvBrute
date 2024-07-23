@@ -6,6 +6,7 @@ namespace FnvBrute
     static class Utilities
     {
         public static List<char> chars = "-abcdefghijklmnopqrstuvwxyz0123456789._".ToCharArray().ToList();
+        //public static List<char> chars = "-abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".ToCharArray().ToList();
         // returns: whether the specified byte has completed a loop
         public static bool Increment(this byte[] array, int i)
         {
@@ -34,7 +35,7 @@ namespace FnvBrute
             array[i] = result;
             */
             if (chars.IndexOf((char)array[i]) + 1 > chars.Count - 1) {
-                array[i] = (byte)chars[0];
+                array[i] = (byte)chars[1];
                 return true;
             }
             else {
