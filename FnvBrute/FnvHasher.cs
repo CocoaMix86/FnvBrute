@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Text;
 using System.Collections.Generic;
-
 using System.Threading;
 using System.Threading.Tasks;
 using System.Linq;
@@ -44,8 +43,6 @@ namespace FnvBrute
                     if (hash == match) {
                         callback(length, $"{hash.ToString("x8")} - {Encoding.ASCII.GetString(_bytes)}");
                     }
-                skip:;
-
                 }
             stop:;
             });
