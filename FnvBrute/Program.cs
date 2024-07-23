@@ -78,7 +78,7 @@ namespace FnvBrute
             byte[] chars = Encoding.UTF8.GetBytes("abcdefghijklmnopqrstuvwxyz");
             //char[] chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".ToCharArray();
 
-            Parallel.ForEach(chars, index => {
+            Parallel.ForEach<byte, uint>(chars, () => match, (index, j) => {
                 byte[] _bytes = new byte[length];
                 _bytes[0] = index;
                 for (var i = 1; i < _bytes.Length; i++) {
