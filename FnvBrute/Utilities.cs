@@ -10,38 +10,28 @@ namespace FnvBrute
         // returns: whether the specified byte has completed a loop
         public static bool Increment(this byte[] array, int i)
         {
-            /*
-            var result = (byte)(array[i] + 1);
+            byte result = (byte)(array[i] + 1);
 
-            if (result == '`') {
+            if (result == '{') {
+                array[i] = (byte)'0';
+                return false;
+            }
+            if (result == ':') {
                 array[i] = (byte)'.';
                 return false;
             }
-            // digits out of bound, continue to alphabet
-            // : comes after 9
-            else if (result == ':')
-            {
-                array[i] = (byte)'a';
+            if (result == '/') {
+                array[i] = (byte)'_';
                 return false;
             }
-            // alphabet out of bound
-            // } comes after z
-            else if (result == '{')
-            {
+            if (result == '`') {
+                array[i] = (byte)'a';
                 return true;
             }
 
-            // keep incrementing
-            array[i] = result;
-            */
-            if (chars.IndexOf((char)array[i]) + 1 > chars.Count - 1) {
-                array[i] = (byte)chars[1];
-                return true;
-            }
-            else {
-                array[i] = (byte)chars[chars.IndexOf((char)array[i]) + 1];
-                return false;
-            }
+            array[i]++;
+            return false;
+            
         }
     }
 }
